@@ -28,17 +28,20 @@ const renderDataAsHtml = (data) => {
     const note = data[noteId];
     // For each note create an HTML card
     if (note.title){ //avoid making undefined card for archive
-    cards += createCard(note, noteId)
+    cards += createCard(note, noteId);
+    setRandomColor();
     }
   };
   // Inject our string of HTML into our viewNotes.html page
   document.querySelector('#app').innerHTML = cards;
 };
 
+let counter = 0;
 const createCard = (note, noteId) => {
+   counter++;
    return `
      <div class="column is-one-quarter">
-       <div class="card">
+       <div class="card" id="id${counter}">
          <header class="card-header">
            <p class="card-header-title">${note.title}</p>
          </header>
@@ -120,4 +123,18 @@ function archiveNote(noteId){
     }) 
   }); 
   firebase.database().ref(`users/${googleUserId}/${noteId}`).remove();
+}
+
+function getRandomColor() {
+  return "hsl(" + Math.random() * 361 + ", 100%, 90%)"
+}
+
+function setRandomColor() {
+  var style = document.createElement('style');
+  style.innerHTML = `
+  #id${counter} {
+    background: ${getRandomColor()}
+  }
+  `;
+  document.head.appendChild(style);
 }
