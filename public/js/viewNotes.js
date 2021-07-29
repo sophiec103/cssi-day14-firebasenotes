@@ -13,7 +13,7 @@ window.onload = (event) => {
 };
 
 const getNotes = (userId) => {
-  const notesRef = firebase.database().ref(`users/${userId}`);
+  const notesRef = firebase.database().ref(`users/${userId}`).orderByChild("title");
   notesRef.on('value', (snapshot) => {
     const data = snapshot.val();
     renderDataAsHtml(data);
@@ -24,9 +24,12 @@ const renderDataAsHtml = (data) => {
   let cards = ``;
   for(const noteItem in data) {
     const note = data[noteItem];
+    console.log(note);
+
     // For each note create an HTML card
     cards += createCard(note)
   };
+
   // Inject our string of HTML into our viewNotes.html page
   document.querySelector('#app').innerHTML = cards;
 };
