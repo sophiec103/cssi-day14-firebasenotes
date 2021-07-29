@@ -15,7 +15,7 @@
     <script defer src="/__/firebase/8.3.1/firebase-auth.js"></script>
     <script defer src="/__/firebase/8.3.1/firebase-database.js"></script>
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-    <script src="js/writeNote.js"></script>
+    <script defer src="js/writeNote.js"></script>
   </head>
   <body>
 
@@ -43,6 +43,14 @@
                 <label class="label">Title</label>
                 <div class="control">
                   <input class="input is-medium" type="text" id="noteTitle">
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Labels</label>
+                <div class="control">
+                  <input class="input is-medium" type="text" id="noteLabel">
+                </div>
+                <div class="field is-grouped is-grouped-multiline" id="tags">
                 </div>
               </div>
               <div class="field">

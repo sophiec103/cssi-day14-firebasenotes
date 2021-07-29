@@ -12,6 +12,7 @@ window.onload = (event) => {
   });
 };
 
+
 const handleNoteSubmit = () => {
   // 1. Capture the form data
   const noteTitle = document.querySelector('#noteTitle');
@@ -27,3 +28,37 @@ const handleNoteSubmit = () => {
     noteText.value = "";
   });
 }
+
+const createTag = (tag) => {
+//   var newTag = document.createElement("div");
+//   newTag.classList.add("tags", "has-addons");
+//   var newTagText = document.createElement("p");
+//   newTagText.classList.add("tag");
+//   var textNode = document.createTextNode(tag);
+//   newTagText.appendChild(textNode);
+//   var newTagDel = document.createElement("a");
+//   newTagDel.classList.add("tag", "is-delete");
+//   newTag.appendChild(newTagText);
+//   newTag.appendChild(newTagDel);
+//   var tagHolder = document.querySelector("#tags");
+//   tagHolder.appendChild(newTag);
+  var newTag = document.createElement("span");
+  newTag.classList.add("tag");
+  var textNode = document.createTextNode(tag);
+  var delButton = document.createElement("button");
+  delButton.classList.add("delete", "is-small");
+  newTag.appendChild(textNode);
+  newTag.appendChild(delButton);
+  var tagHolder = document.querySelector("#tags");
+  tagHolder.appendChild(newTag);
+  delButton.addEventListener("click", event => {
+      tagHolder.removeChild(newTag);
+  });
+};
+
+const inputField = document.querySelector("#noteLabel");
+inputField.addEventListener("change", event => {
+    let text = inputField.value;
+    createTag(text);
+    inputField.value = "";
+});
