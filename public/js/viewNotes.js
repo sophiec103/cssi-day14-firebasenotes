@@ -15,23 +15,36 @@ window.onload = (event) => {
 };
 
 const getNotes = (userId) => {
-  const notesRef = firebase.database().ref(`users/${userId}`);
+  const notesRef = firebase.database().ref(`users/${userId}`).orderByChild('title');
   notesRef.on('value', (snapshot) => {
     const data = snapshot.val();
+    console.log(data);
     renderDataAsHtml(data);
   });
 };
 
 const renderDataAsHtml = (data) => {
+  let cardTitles = [];
+  let fullCards = [];
   let cards = ``;
   for(const noteId in data) {
     const note = data[noteId];
-    // For each note create an HTML card
-    if (note.title){ //avoid making undefined card for archive
-    cards += createCard(note, noteId);
-    setRandomColor();
-    }
+    fullCards.push(note);
+    cardTitles.push(note.title);
+    console.log(cardTitles);   
   };
+
+  const sortedCards = sortCards(cardTitles, fullCards, cardTitles.length);
+
+  for (const noteId in sortedCards) {
+      const note = sortedCards[noteId];
+
+      if (note.title) { //avoid making undefined card for archive
+        cards += createCard(note, noteId);
+        setRandomColor();
+    }    
+  }
+
   // Inject our string of HTML into our viewNotes.html page
   document.querySelector('#app').innerHTML = cards;
 };
@@ -137,4 +150,28 @@ function setRandomColor() {
   }
   `;
   document.head.appendChild(style);
+}
+
+function sortCards(arr, cards, n) {
+    var i, j, min_idx;
+ 
+    // One by one move boundary of unsorted subarray
+    for (i = 0; i < n-1; i++)
+    {
+        // Find the minimum element in unsorted array
+        min_idx = i;
+        for (j = i + 1; j < n; j++)
+        if (arr[j] < arr[min_idx])
+            min_idx = j;
+ 
+        // Swap the found minimum element with the first element
+        var temp = arr[min_idx];
+        arr[min_idx] = arr[i];
+        arr[i] = temp;
+
+        temp = cards[min_idx];
+        cards[min_idx] = cards[i];
+        cards[i] = temp;
+    }
+    return cards;
 }

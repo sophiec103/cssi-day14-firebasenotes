@@ -1,5 +1,9 @@
 {
   "projects": {
+<<<<<<< HEAD
+    "staging": "jlge-firebasenotes"
+=======
     "cssi-day14": "cssifirebasenotes"
+>>>>>>> c324b1bc2a00265b4342f947909a424f92c2fabb
   }
 }
