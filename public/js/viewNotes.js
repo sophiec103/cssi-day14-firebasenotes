@@ -1,10 +1,12 @@
 let googleUserId;
+let name;
 
 window.onload = (event) => {
   // Use this to retain user state between html pages.
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       console.log('Logged in as: ' + user.displayName);
+      name = user.displayName;
       googleUserId = user.uid;
       getNotes(googleUserId);
     } else {
@@ -34,7 +36,7 @@ const renderDataAsHtml = (data) => {
     console.log(cardTitles);   
   };
 
-  const sortedCards = sortCards(cardTitles, fullCards, cardTitles.length);
+  const sortedCards = sortCardsByTitle(cardTitles, fullCards, cardTitles.length);
 
   for (const noteId in sortedCards) {
       const note = sortedCards[noteId];
@@ -60,6 +62,8 @@ const createCard = (note, noteId) => {
          </header>
          <div class="card-content">
            <div class="content">${note.text}</div>
+           <br>
+           <div class="content"><i>Created by ${name} <br> on ${note.created}</i></div>
          </div>
          <footer class = "card-footer">
             <a 
@@ -152,7 +156,7 @@ function setRandomColor() {
   document.head.appendChild(style);
 }
 
-function sortCards(arr, cards, n) {
+function sortCardsByTitle(arr, cards, n) {
     var i, j, min_idx;
  
     // One by one move boundary of unsorted subarray
@@ -175,3 +179,4 @@ function sortCards(arr, cards, n) {
     }
     return cards;
 }
+
