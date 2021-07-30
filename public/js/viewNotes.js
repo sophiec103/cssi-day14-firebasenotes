@@ -111,6 +111,12 @@ const editNote = (noteId) => {
     const note = snapshot.val();
     document.querySelector('#editTitleInput').value = note.title;
     document.querySelector('#editTextInput').value = note.text;
+    let labels = "";
+    for (let i = 0; i<(note.labels).length-1; i++){
+        labels += note.labels[i] + ", ";
+    }
+    labels += note.labels[(note.labels).length-1];
+    document.querySelector('#editLabelInput').value = labels;
     document.querySelector('#noteId').value = noteId;
   });
   editNoteModal.classList.toggle('is-active');
@@ -119,12 +125,14 @@ const editNote = (noteId) => {
 function saveEditedNote(){
     const title = document.querySelector('#editTitleInput').value;
     const text = document.querySelector('#editTextInput').value;
+    const label = document.querySelector('#editLabelInput').value;
     const noteId = document.querySelector('#noteId').value;
     // const editedNote = {
     //     title: title,
     //     text: text
     // }
-    const editedNote = {title, text}; //shorted way for above when the var names are repeated
+    labels = label.split(", ");
+    const editedNote = {title, text, labels}; //shorted way for above when the var names are repeated
     firebase.database().ref(`users/${googleUserId}/${noteId}`).update(editedNote);
     closeEditModal();
 }
@@ -184,38 +192,64 @@ function sortCards(arr, cards, n) {
     return cards;
 }
 
+function sortCardsI(arr, cards, n) {
+    var i, j, max_idx;
+ 
+    // One by one move boundary of unsorted subarray
+    for (i = 0; i < n-1; i++)
+    {
+        // Find the maximum element in unsorted array
+        max_idx = i;
+        for (j = i + 1; j < n; j++)
+        if (arr[j] > arr[max_idx])
+            max_idx = j;
+ 
+        // Swap the found maximum element with the first element
+        var temp = arr[max_idx];
+        arr[max_idx] = arr[i];
+        arr[i] = temp;
+
+        temp = cards[max_idx];
+        cards[max_idx] = cards[i];
+        cards[i] = temp;
+    }
+    return cards;
+}
+
+let titleCounter = 1;
 function sortCardsByTitle(){
     let cards = ``;
     cardTimes = [];
-    cardTitles = [];
-    sortedCards = sortCards(cardTitles, sortedCards, cardTitles.length);
+    if (titleCounter%2==0) sortedCards = sortCards(cardTitles, sortedCards, cardTitles.length);
+    else sortedCards = sortCardsI(cardTitles, sortedCards, cardTitles.length);
     for (const noteKey in sortedCards) {
       const note = sortedCards[noteKey];
       if (note.title) { //avoid making undefined card for archive
         cards += createCard(note, note.noteId);
         setRandomColor();
         cardTimes.push(note.time); 
-        cardTitles.push(note.title); 
       }
     }
+    titleCounter++;
     // Inject our string of HTML into our viewNotes.html page
     document.querySelector('#app').innerHTML = cards;  
 }
 
+let timeCounter = 0;
 function sortCardsByTime(){
     let cards = ``;
-    cardTimes = [];
     cardTitles = [];
-    sortedCards = sortCards(cardTimes, sortedCards, cardTimes.length);
+    if (timeCounter%2==0) sortedCards = sortCards(cardTimes, sortedCards, cardTimes.length);
+    else sortedCards = sortCardsI(cardTimes, sortedCards, cardTimes.length);
     for (const noteKey in sortedCards) {
       const note = sortedCards[noteKey];
       if (note.title) { //avoid making undefined card for archive
         cards += createCard(note, note.noteId);
         setRandomColor();
-        cardTimes.push(note.time); 
         cardTitles.push(note.title); 
       }
-    }    
-  // Inject our string of HTML into our viewNotes.html page
-  document.querySelector('#app').innerHTML = cards;
+    }   
+    timeCounter++; 
+    // Inject our string of HTML into our viewNotes.html page
+    document.querySelector('#app').innerHTML = cards;
 }

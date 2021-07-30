@@ -39,10 +39,11 @@
 
             <!-- NOTE FORM -->
             <div class="column is-one-third has-text-left">
+            <!-- <form action="javascript:void(0);"> -->
               <div class="field">
                 <label class="label">Title</label>
                 <div class="control">
-                  <input class="input is-medium" type="text" id="noteTitle">
+                  <input class="input is-medium" type="text" id="noteTitle" required>
                 </div>
               </div>
               <div class="field">
@@ -50,7 +51,7 @@
                 <div class="control">
                   <input class="input is-medium" type="text" id="noteLabel">
                 </div>
-                <div class="field is-grouped is-grouped-multiline" id="tags">
+                <div class="field" id="tags">
                 </div>
               </div>
               <div class="field">
@@ -62,6 +63,7 @@
               <div class="control">
                 <button class="button is-link is-fullwidth has-text-weight-medium is-medium" onclick="handleNoteSubmit()">Create Note</button>
               </div>
+            <!-- </form> -->
             </div>
             
           </div>
