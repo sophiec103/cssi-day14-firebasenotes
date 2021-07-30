@@ -20,30 +20,35 @@ const getNotes = (userId) => {
   const notesRef = firebase.database().ref(`users/${userId}`).orderByChild('title');
   notesRef.on('value', (snapshot) => {
     const data = snapshot.val();
-    console.log(data);
     renderDataAsHtml(data);
   });
 };
 
-const renderDataAsHtml = (data) => {
   let cardTitles = [];
   let fullCards = [];
+  let cardTimes = [];
+  let sortedCards = [];
+const renderDataAsHtml = (data) => {
   let cards = ``;
+  cardTitles = [];
+  fullCards = [];
+  cardTimes = [];
   for(const noteId in data) {
     const note = data[noteId];
+    note.noteId = noteId;
     fullCards.push(note);
     cardTitles.push(note.title);
-    console.log(cardTitles);   
   };
 
-  const sortedCards = sortCardsByTitle(cardTitles, fullCards, cardTitles.length);
+  sortedCards = sortCards(cardTitles, fullCards, cardTitles.length);
 
-  for (const noteId in sortedCards) {
-      const note = sortedCards[noteId];
+  for (const noteKey in sortedCards) {
+      const note = sortedCards[noteKey];
 
       if (note.title) { //avoid making undefined card for archive
-        cards += createCard(note, noteId);
+        cards += createCard(note, note.noteId);
         setRandomColor();
+        cardTimes.push(note.time); 
     }    
   }
 
@@ -62,7 +67,6 @@ const createCard = (note, noteId) => {
          </header>
          <div class="card-content">
            <div class="content">${note.text}</div>
-           <br>
            <div class="content"><i>Created by ${name} <br> on ${note.created}</i></div>
          </div>
          <footer class = "card-footer">
@@ -156,7 +160,7 @@ function setRandomColor() {
   document.head.appendChild(style);
 }
 
-function sortCardsByTitle(arr, cards, n) {
+function sortCards(arr, cards, n) {
     var i, j, min_idx;
  
     // One by one move boundary of unsorted subarray
@@ -180,3 +184,38 @@ function sortCardsByTitle(arr, cards, n) {
     return cards;
 }
 
+function sortCardsByTitle(){
+    let cards = ``;
+    cardTimes = [];
+    cardTitles = [];
+    sortedCards = sortCards(cardTitles, sortedCards, cardTitles.length);
+    for (const noteKey in sortedCards) {
+      const note = sortedCards[noteKey];
+      if (note.title) { //avoid making undefined card for archive
+        cards += createCard(note, note.noteId);
+        setRandomColor();
+        cardTimes.push(note.time); 
+        cardTitles.push(note.title); 
+      }
+    }
+    // Inject our string of HTML into our viewNotes.html page
+    document.querySelector('#app').innerHTML = cards;  
+}
+
+function sortCardsByTime(){
+    let cards = ``;
+    cardTimes = [];
+    cardTitles = [];
+    sortedCards = sortCards(cardTimes, sortedCards, cardTimes.length);
+    for (const noteKey in sortedCards) {
+      const note = sortedCards[noteKey];
+      if (note.title) { //avoid making undefined card for archive
+        cards += createCard(note, note.noteId);
+        setRandomColor();
+        cardTimes.push(note.time); 
+        cardTitles.push(note.title); 
+      }
+    }    
+  // Inject our string of HTML into our viewNotes.html page
+  document.querySelector('#app').innerHTML = cards;
+}
