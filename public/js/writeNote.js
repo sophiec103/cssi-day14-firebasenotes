@@ -65,15 +65,17 @@ const createTag = (tag) => {
   var newTag = document.createElement("span");
   newTag.classList.add("tag");
   var textNode = document.createTextNode(tag);
+  var space = document.createTextNode(" ");
   var delButton = document.createElement("button");
   delButton.classList.add("delete", "is-small");
   newTag.appendChild(textNode);
   newTag.appendChild(delButton);
   var tagHolder = document.querySelector("#tags");
   tagHolder.appendChild(newTag);
+  tagHolder.appendChild(space);
   delButton.addEventListener("click", event => {
       tagHolder.removeChild(newTag);
-      arr.splice(arr.indexOf(tag), 1); 
+      arr.splice(arr.indexOf(tag), 2); 
   });
 };
 

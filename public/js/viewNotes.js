@@ -28,6 +28,7 @@ const getNotes = (userId) => {
   let fullCards = [];
   let cardTimes = [];
   let sortedCards = [];
+  let labels = [];
 const renderDataAsHtml = (data) => {
   let cards = ``;
   cardTitles = [];
@@ -38,6 +39,11 @@ const renderDataAsHtml = (data) => {
     note.noteId = noteId;
     fullCards.push(note);
     cardTitles.push(note.title);
+    if(note.labels){
+        for(let i=0; i<(note.labels).length; i++){
+            if(labels.indexOf(note.labels[i])==-1)labels.push(note.labels[i]);
+        }
+    }
   };
 
   sortedCards = sortCards(cardTitles, fullCards, cardTitles.length);
@@ -56,19 +62,40 @@ const renderDataAsHtml = (data) => {
   document.querySelector('#app').innerHTML = cards;
 };
 
+function createNewLine(text){
+   let t = "";
+   while (text.indexOf("\n")!=-1){ //replace all \n with <br>
+       t = text.substring(0,text.indexOf("\n"));
+       t += "<br>";
+       t += text.substring(text.indexOf("\n")+1);
+       text = t;
+   }
+   return text;
+}
+
 let counter = 0;
 const createCard = (note, noteId) => {
    counter++;
-   return `
+   const text = createNewLine(note.text);
+   let s = ``;
+   s += `
      <div class="column is-one-quarter">
        <div class="card" id="id${counter}">
          <header class="card-header">
            <p class="card-header-title">${note.title}</p>
          </header>
          <div class="card-content">
-           <div class="content">${note.text}</div>
-           <div class="content"><i>Created by ${name} <br> on ${note.created}</i></div>
-         </div>
+           <div class="content">${text}</div>
+            `
+
+    for (let i = 0; i<note.labels.length; i++){
+        s += `<span class="tag is-light is-info"> 
+                ${note.labels[i]}
+              </span> &nbsp`
+    }
+
+    s += ` <div class="content"><i>Created by ${name} <br> on ${note.created}</i></div>
+           </div>
          <footer class = "card-footer">
             <a 
                 href = "#" 
@@ -92,6 +119,7 @@ const createCard = (note, noteId) => {
        </div>
      </div>
    `;
+   return s;
 };
 
 function deleteNote(noteId){
@@ -148,7 +176,10 @@ function archiveNote(noteId){
     const note = snapshot.val();
     firebase.database().ref(`users/${googleUserId}/archive`).push({
       title: note.title,
-      text: note.text 
+      text: note.text,
+      time: note.time,
+      created: note.created,
+      labels: note.labels
     }) 
   }); 
   firebase.database().ref(`users/${googleUserId}/${noteId}`).remove();
@@ -233,6 +264,7 @@ function sortCardsByTitle(){
     titleCounter++;
     // Inject our string of HTML into our viewNotes.html page
     document.querySelector('#app').innerHTML = cards;  
+        document.querySelector("#labelSort").innerHTML = "";
 }
 
 let timeCounter = 0;
@@ -252,4 +284,33 @@ function sortCardsByTime(){
     timeCounter++; 
     // Inject our string of HTML into our viewNotes.html page
     document.querySelector('#app').innerHTML = cards;
+        document.querySelector("#labelSort").innerHTML = "";
+}
+
+let labelCounter = 0;
+function sortCardsByLabel(){
+    let html = ``;
+    labels.sort();
+    if(labelCounter%2==0){
+        for(let i = 0; i<labels.length; i++){
+        html += `<button class="button is-small is-outlined is-info">
+                    ${labels[i]}                   
+                 </button>&nbsp`;
+        }
+    }
+
+    document.querySelector("#labelSort").innerHTML = html;
+    let cards = ``;
+    // cardTitles = [];
+    // for (const noteKey in sortedCards) {
+    //   const note = sortedCards[noteKey];
+    //   if (note.title) { //avoid making undefined card for archive
+    //     cards += createCard(note, note.noteId);
+    //     setRandomColor();
+    //     cardTitles.push(note.title); 
+    //   }
+    // }   
+    // // Inject our string of HTML into our viewNotes.html page
+    // document.querySelector('#app').innerHTML = cards;
+    labelCounter++;
 }
