@@ -34,6 +34,7 @@ const renderDataAsHtml = (data) => {
   cardTitles = [];
   fullCards = [];
   cardTimes = [];
+  labels = [];
   for(const noteId in data) {
     const note = data[noteId];
     note.noteId = noteId;
