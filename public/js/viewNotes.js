@@ -264,7 +264,8 @@ function sortCardsByTitle(){
     titleCounter++;
     // Inject our string of HTML into our viewNotes.html page
     document.querySelector('#app').innerHTML = cards;  
-        document.querySelector("#labelSort").innerHTML = "";
+    document.querySelector("#labelSort").innerHTML = "";
+    if(labelCounter%2==1)labelCounter++;
 }
 
 let timeCounter = 0;
@@ -284,33 +285,53 @@ function sortCardsByTime(){
     timeCounter++; 
     // Inject our string of HTML into our viewNotes.html page
     document.querySelector('#app').innerHTML = cards;
-        document.querySelector("#labelSort").innerHTML = "";
+    document.querySelector("#labelSort").innerHTML = "";
+    if(labelCounter%2==1)labelCounter++;
 }
 
 let labelCounter = 0;
+let excluded = [];
 function sortCardsByLabel(){
     let html = ``;
+    excluded = [];
     labels.sort();
     if(labelCounter%2==0){
         for(let i = 0; i<labels.length; i++){
-        html += `<button class="button is-small is-outlined is-info">
+        html += `<button class="button is-small is-outlined is-light is-info" id="id${labels[i]}" onclick = "excludeLabel('${labels[i]}')">
                     ${labels[i]}                   
                  </button>&nbsp`;
         }
     }
-
     document.querySelector("#labelSort").innerHTML = html;
-    let cards = ``;
-    // cardTitles = [];
-    // for (const noteKey in sortedCards) {
-    //   const note = sortedCards[noteKey];
-    //   if (note.title) { //avoid making undefined card for archive
-    //     cards += createCard(note, note.noteId);
-    //     setRandomColor();
-    //     cardTitles.push(note.title); 
-    //   }
-    // }   
-    // // Inject our string of HTML into our viewNotes.html page
-    // document.querySelector('#app').innerHTML = cards;
     labelCounter++;
+}
+
+function excludeLabel(label){
+    if (excluded.includes(label)){
+        excluded.splice(excluded.indexOf(label),1);
+        document.querySelector("#id"+label).classList.remove("is-active");
+        document.querySelector("#id"+label).blur();
+    }else{
+        excluded.push(label);
+        document.querySelector("#id"+label).classList.add("is-active");
+    }
+        let cards = ``;
+    for (const noteKey in sortedCards) {
+      const note = sortedCards[noteKey];
+      if (note.title) { //avoid making undefined card for archive
+        let exclude = false;
+        for(let i=0; i<note.labels.length; i++){
+            if(excluded.indexOf(note.labels[i])!=-1){
+                exclude = true;
+                break;
+            }
+        }
+        if(!exclude){
+            cards += createCard(note, note.noteId);
+            setRandomColor();
+        }
+      }
+    }   
+    // Inject our string of HTML into our viewNotes.html page
+    document.querySelector('#app').innerHTML = cards;
 }
